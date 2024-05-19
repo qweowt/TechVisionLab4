@@ -14,6 +14,8 @@ namespace TechVisionLab4
         VideoCapture videoCapture;
         bool camIsOn = false;
 
+        List<string> signName = new List<string> { "Brick", "Forward", "Stop" };
+
         OpenCvSharp.Point point;
 
         OpenCvSharp.Point[][] contours;
@@ -112,7 +114,7 @@ namespace TechVisionLab4
 
                 if (!frame.Empty())
                 {
-                    if(PixelParm.Checked)
+                    if (PixelParm.Checked)
                     {
                         Vec3b pixelValue = frame.Get<Vec3b>(point.Y, point.X);
                         byte b = pixelValue.Item0;
@@ -132,8 +134,8 @@ namespace TechVisionLab4
                                 byte r = pixelValue.Item1;
                                 byte g = pixelValue.Item2;
 
-                                if (b < numericBmin.Value || b > numericBmax.Value || 
-                                    r < numericRmin.Value || r > numericRmax.Value || 
+                                if (b < numericBmin.Value || b > numericBmax.Value ||
+                                    r < numericRmin.Value || r > numericRmax.Value ||
                                     g < numericGmin.Value || g > numericGmax.Value)
                                     frame.Set(j, i, new Vec3b(0, 0, 0));
                             }
@@ -164,7 +166,7 @@ namespace TechVisionLab4
                         }
                     }
 
-                    pictureBox1.Image = BitmapConverter.ToBitmap(SetFilter(frame)); 
+                    pictureBox1.Image = BitmapConverter.ToBitmap(SetFilter(frame));
                 }
             }
             catch (Exception ex)
@@ -188,8 +190,8 @@ namespace TechVisionLab4
                     SetUIParam(filtersCb.SelectedIndex);
                     break;
                 case 2:
-                    Scalar lowerBound = new Scalar(trackBarLR.Value, trackBarLG.Value, trackBarLG.Value); 
-                    Scalar upperBound = new Scalar(trackBarUR.Value, trackBarUG.Value, trackBarUB.Value); 
+                    Scalar lowerBound = new Scalar(trackBarLR.Value, trackBarLG.Value, trackBarLG.Value);
+                    Scalar upperBound = new Scalar(trackBarUR.Value, trackBarUG.Value, trackBarUB.Value);
                     Cv2.InRange(frame, lowerBound, upperBound, newFrame);
                     SetUIParam(filtersCb.SelectedIndex);
                     break;
@@ -198,12 +200,12 @@ namespace TechVisionLab4
                     Cv2.Canny(frame, newFrame, trackBarLR.Value, trackBarUR.Value);
                     break;
                 case 4:
-                    Mat filtered2D = new Mat(3, 3, MatType.CV_32F, new float[] { -1, -1, -1, -1, 8, -1, -1, -1, -1 }); 
+                    Mat filtered2D = new Mat(3, 3, MatType.CV_32F, new float[] { -1, -1, -1, -1, 8, -1, -1, -1, -1 });
                     SetUIParam(filtersCb.SelectedIndex);
                     Cv2.Filter2D(frame, newFrame, -1, filtered2D);
                     break;
                 case 5:
-                    OpenCvSharp.Size kernelSize = new OpenCvSharp.Size(trackBarBlur.Value, trackBarBlur.Value); 
+                    OpenCvSharp.Size kernelSize = new OpenCvSharp.Size(trackBarBlur.Value, trackBarBlur.Value);
                     SetUIParam(filtersCb.SelectedIndex);
                     Cv2.Blur(frame, newFrame, kernelSize);
                     break;
@@ -296,6 +298,97 @@ namespace TechVisionLab4
                 point = new OpenCvSharp.Point(e.X, e.Y);
             else
                 return;
+        }
+
+        private void DetectBtn_Click(object sender, EventArgs e)
+        {
+            if (SearchObjects.Checked && rect != null)
+            {
+                string[] maskFiles = Directory.GetFiles(@"C:\Users\Никита\Documents\GitHub\TechVisionLab4\TechVisionLab4\bin\Debug\net8.0-windows\Templates", "*.png");
+                string[] templateFiles = Directory.GetFiles(@"C:\Users\Никита\Documents\GitHub\TechVisionLab4\TechVisionLab4\bin\Debug\net8.0-windows\Templates", "*.png");
+                int tagCount = 0;
+                flowLayoutPanel1.Controls.Clear();
+
+                foreach (OpenCvSharp.Rect r in rectList)
+                {
+                    Image image = pictureBox1.Image;
+                    Bitmap bitmap = new Bitmap(image);
+                    Bitmap croppedBitmap = bitmap.Clone(new Rectangle(r.X, r.Y, r.Width, r.Height), bitmap.PixelFormat);
+
+                    double bestSimilarity = 0;
+
+                    int bestIndex = 0;
+                    Mat bestImage = new Mat(), bestCropped = new Mat(), bestMask = new Mat();
+
+                    for (int i = 0; i < maskFiles.Length; i++)
+                    {
+                        // Загружаем изображение и маску
+                        Mat img = new Mat();
+                        Mat cropped = new Mat();
+                        Mat mask = Cv2.ImRead(maskFiles[i]);
+                        Mat templateAngle = Cv2.ImRead(templateFiles[i]);
+
+                        Cv2.Resize(templateAngle, templateAngle, new OpenCvSharp.Size(mask.Size().Width, mask.Size().Height));
+                        Cv2.Resize(BitmapConverter.ToMat(croppedBitmap), img, new OpenCvSharp.Size(mask.Size().Width, mask.Size().Height));
+                        Cv2.Resize(BitmapConverter.ToMat(croppedBitmap), cropped, new OpenCvSharp.Size(mask.Size().Width, mask.Size().Height));
+
+                        // Преобразуем изображение в оттенки серого
+                        // Это позволит работать с одноканальным изображением, где значения пикселей представляют яркость
+                        Cv2.CvtColor(img, img, ColorConversionCodes.BGR2GRAY);
+                        Cv2.CvtColor(mask, mask, ColorConversionCodes.BGR2GRAY);
+                        Cv2.CvtColor(templateAngle, templateAngle, ColorConversionCodes.BGR2GRAY);
+
+                        // Бинаризация изображения
+                        int thresholdValue = 127; // Пороговое значение
+                        int maxValue = 255; // Максимальное значение для белых пикселей
+                        Cv2.Threshold(img, img, thresholdValue, maxValue, ThresholdTypes.BinaryInv);
+                        Cv2.Threshold(mask, mask, thresholdValue, maxValue, ThresholdTypes.Binary);
+                        Cv2.Threshold(templateAngle, templateAngle, thresholdValue, maxValue, ThresholdTypes.Binary);
+
+                        Cv2.BitwiseAnd(mask, templateAngle, mask);
+                        Cv2.BitwiseAnd(img, templateAngle, img);
+
+                        double sumWhitePixelsImage = (double)Cv2.CountNonZero(img);
+                        double sumWhitePixelsMask = (double)Cv2.CountNonZero(mask);
+
+                        double similarity = sumWhitePixelsImage / sumWhitePixelsMask * 100;
+
+                        if (similarity > bestSimilarity && similarity < 100)
+                        {
+                            bestSimilarity = similarity;
+                            bestIndex = i;
+                            bestImage = img;
+                            bestCropped = cropped;
+                            bestMask = mask;
+                        }
+                    }
+
+                    if ((int)bestSimilarity > numericProc.Value && (int)bestSimilarity < 100)
+                    {
+                        bestCropped.PutText($"{signName[bestIndex]} {(int)bestSimilarity}%", new OpenCvSharp.Point(10, 30), HersheyFonts.HersheyComplex, 0.5, new Scalar(0, 0, 0, 255), 1);
+                        PictureBox picture = new PictureBox();
+                        picture.Size = new System.Drawing.Size(150, 150);
+                        picture.SizeMode = PictureBoxSizeMode.StretchImage;
+                        flowLayoutPanel1.Controls.Add(picture);
+                        picture.Image = BitmapConverter.ToBitmap(bestCropped);
+                        tagCount++;
+
+                        PictureBox picture2 = new PictureBox();
+                        picture2.Size = new System.Drawing.Size(150, 150);
+                        picture2.SizeMode = PictureBoxSizeMode.StretchImage;
+                        flowLayoutPanel1.Controls.Add(picture2);
+                        picture2.Image = BitmapConverter.ToBitmap(bestImage);
+                        tagCount++;
+
+                        PictureBox picture3 = new PictureBox();
+                        picture3.Size = new System.Drawing.Size(150, 150);
+                        picture3.SizeMode = PictureBoxSizeMode.StretchImage;
+                        flowLayoutPanel1.Controls.Add(picture3);
+                        picture3.Image = BitmapConverter.ToBitmap(SetFilter(bestMask));
+                        tagCount++;
+                    }
+                }
+            }
         }
     }
 }

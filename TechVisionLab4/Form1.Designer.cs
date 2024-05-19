@@ -66,6 +66,9 @@ namespace TechVisionLab4
             numericSizeMin = new NumericUpDown();
             numericU = new NumericUpDown();
             numericL = new NumericUpDown();
+            DetectBtn = new Button();
+            flowLayoutPanel1 = new FlowLayoutPanel();
+            numericProc = new NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             BinParamBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)trackBarBlur).BeginInit();
@@ -85,12 +88,13 @@ namespace TechVisionLab4
             ((System.ComponentModel.ISupportInitialize)numericSizeMin).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericU).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numericL).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericProc).BeginInit();
             SuspendLayout();
             // 
             // pictureBox1
             // 
             pictureBox1.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox1.Location = new Point(12, 74);
+            pictureBox1.Location = new Point(12, 67);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(640, 480);
             pictureBox1.TabIndex = 0;
@@ -144,7 +148,7 @@ namespace TechVisionLab4
             // 
             filtersCb.FormattingEnabled = true;
             filtersCb.Items.AddRange(new object[] { "orginal", "CvtColor", "InRangeS", "Canny", "Filter2D", "Smooth" });
-            filtersCb.Location = new Point(668, 531);
+            filtersCb.Location = new Point(668, 524);
             filtersCb.Name = "filtersCb";
             filtersCb.Size = new Size(160, 23);
             filtersCb.TabIndex = 4;
@@ -159,7 +163,7 @@ namespace TechVisionLab4
             BinParamBox.Controls.Add(trackBarLR);
             BinParamBox.Controls.Add(trackBarLG);
             BinParamBox.Controls.Add(trackBarLB);
-            BinParamBox.Location = new Point(658, 298);
+            BinParamBox.Location = new Point(658, 291);
             BinParamBox.Name = "BinParamBox";
             BinParamBox.Size = new Size(335, 227);
             BinParamBox.TabIndex = 5;
@@ -235,7 +239,7 @@ namespace TechVisionLab4
             // PixelParm
             // 
             PixelParm.AutoSize = true;
-            PixelParm.Location = new Point(856, 535);
+            PixelParm.Location = new Point(856, 528);
             PixelParm.Name = "PixelParm";
             PixelParm.Size = new Size(136, 19);
             PixelParm.TabIndex = 6;
@@ -244,7 +248,7 @@ namespace TechVisionLab4
             // 
             // numericRmin
             // 
-            numericRmin.Location = new Point(668, 98);
+            numericRmin.Location = new Point(668, 91);
             numericRmin.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericRmin.Name = "numericRmin";
             numericRmin.Size = new Size(53, 23);
@@ -252,7 +256,7 @@ namespace TechVisionLab4
             // 
             // numericRmax
             // 
-            numericRmax.Location = new Point(727, 98);
+            numericRmax.Location = new Point(727, 91);
             numericRmax.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericRmax.Name = "numericRmax";
             numericRmax.Size = new Size(53, 23);
@@ -261,7 +265,7 @@ namespace TechVisionLab4
             // 
             // numericGmax
             // 
-            numericGmax.Location = new Point(727, 143);
+            numericGmax.Location = new Point(727, 136);
             numericGmax.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericGmax.Name = "numericGmax";
             numericGmax.Size = new Size(53, 23);
@@ -270,7 +274,7 @@ namespace TechVisionLab4
             // 
             // numericGmin
             // 
-            numericGmin.Location = new Point(668, 143);
+            numericGmin.Location = new Point(668, 136);
             numericGmin.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericGmin.Name = "numericGmin";
             numericGmin.Size = new Size(53, 23);
@@ -278,7 +282,7 @@ namespace TechVisionLab4
             // 
             // numericBmax
             // 
-            numericBmax.Location = new Point(727, 187);
+            numericBmax.Location = new Point(727, 180);
             numericBmax.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericBmax.Name = "numericBmax";
             numericBmax.Size = new Size(53, 23);
@@ -287,7 +291,7 @@ namespace TechVisionLab4
             // 
             // numericBmin
             // 
-            numericBmin.Location = new Point(668, 187);
+            numericBmin.Location = new Point(668, 180);
             numericBmin.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numericBmin.Name = "numericBmin";
             numericBmin.Size = new Size(53, 23);
@@ -297,7 +301,7 @@ namespace TechVisionLab4
             // 
             label1.AutoSize = true;
             label1.ImageAlign = ContentAlignment.MiddleLeft;
-            label1.Location = new Point(668, 80);
+            label1.Location = new Point(668, 73);
             label1.Name = "label1";
             label1.Size = new Size(35, 15);
             label1.TabIndex = 13;
@@ -308,7 +312,7 @@ namespace TechVisionLab4
             // 
             label2.AutoSize = true;
             label2.ImageAlign = ContentAlignment.MiddleLeft;
-            label2.Location = new Point(727, 80);
+            label2.Location = new Point(727, 73);
             label2.Name = "label2";
             label2.Size = new Size(37, 15);
             label2.TabIndex = 14;
@@ -319,7 +323,7 @@ namespace TechVisionLab4
             // 
             label3.AutoSize = true;
             label3.ImageAlign = ContentAlignment.MiddleLeft;
-            label3.Location = new Point(727, 125);
+            label3.Location = new Point(727, 118);
             label3.Name = "label3";
             label3.Size = new Size(38, 15);
             label3.TabIndex = 16;
@@ -330,7 +334,7 @@ namespace TechVisionLab4
             // 
             label4.AutoSize = true;
             label4.ImageAlign = ContentAlignment.MiddleLeft;
-            label4.Location = new Point(669, 125);
+            label4.Location = new Point(669, 118);
             label4.Name = "label4";
             label4.Size = new Size(36, 15);
             label4.TabIndex = 15;
@@ -341,7 +345,7 @@ namespace TechVisionLab4
             // 
             label5.AutoSize = true;
             label5.ImageAlign = ContentAlignment.MiddleLeft;
-            label5.Location = new Point(727, 169);
+            label5.Location = new Point(727, 162);
             label5.Name = "label5";
             label5.Size = new Size(37, 15);
             label5.TabIndex = 18;
@@ -352,7 +356,7 @@ namespace TechVisionLab4
             // 
             label6.AutoSize = true;
             label6.ImageAlign = ContentAlignment.MiddleLeft;
-            label6.Location = new Point(668, 169);
+            label6.Location = new Point(668, 162);
             label6.Name = "label6";
             label6.Size = new Size(35, 15);
             label6.TabIndex = 17;
@@ -362,7 +366,7 @@ namespace TechVisionLab4
             // ChBfilter
             // 
             ChBfilter.AutoSize = true;
-            ChBfilter.Location = new Point(669, 216);
+            ChBfilter.Location = new Point(669, 209);
             ChBfilter.Name = "ChBfilter";
             ChBfilter.Size = new Size(82, 19);
             ChBfilter.TabIndex = 19;
@@ -372,7 +376,7 @@ namespace TechVisionLab4
             // SearchObjects
             // 
             SearchObjects.AutoSize = true;
-            SearchObjects.Location = new Point(797, 172);
+            SearchObjects.Location = new Point(797, 165);
             SearchObjects.Name = "SearchObjects";
             SearchObjects.Size = new Size(102, 19);
             SearchObjects.TabIndex = 20;
@@ -383,7 +387,7 @@ namespace TechVisionLab4
             // 
             label7.AutoSize = true;
             label7.ImageAlign = ContentAlignment.MiddleLeft;
-            label7.Location = new Point(856, 125);
+            label7.Location = new Point(856, 118);
             label7.Name = "label7";
             label7.Size = new Size(53, 15);
             label7.TabIndex = 28;
@@ -394,7 +398,7 @@ namespace TechVisionLab4
             // 
             label8.AutoSize = true;
             label8.ImageAlign = ContentAlignment.MiddleLeft;
-            label8.Location = new Point(798, 125);
+            label8.Location = new Point(798, 118);
             label8.Name = "label8";
             label8.Size = new Size(51, 15);
             label8.TabIndex = 27;
@@ -403,7 +407,7 @@ namespace TechVisionLab4
             // 
             // numericSizeMax
             // 
-            numericSizeMax.Location = new Point(856, 143);
+            numericSizeMax.Location = new Point(856, 136);
             numericSizeMax.Maximum = new decimal(new int[] { 480, 0, 0, 0 });
             numericSizeMax.Name = "numericSizeMax";
             numericSizeMax.Size = new Size(53, 23);
@@ -411,7 +415,7 @@ namespace TechVisionLab4
             // 
             // numericSizeMin
             // 
-            numericSizeMin.Location = new Point(797, 143);
+            numericSizeMin.Location = new Point(797, 136);
             numericSizeMin.Maximum = new decimal(new int[] { 480, 0, 0, 0 });
             numericSizeMin.Name = "numericSizeMin";
             numericSizeMin.Size = new Size(53, 23);
@@ -419,7 +423,7 @@ namespace TechVisionLab4
             // 
             // numericU
             // 
-            numericU.Location = new Point(856, 98);
+            numericU.Location = new Point(856, 91);
             numericU.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             numericU.Name = "numericU";
             numericU.Size = new Size(53, 23);
@@ -427,17 +431,44 @@ namespace TechVisionLab4
             // 
             // numericL
             // 
-            numericL.Location = new Point(797, 98);
+            numericL.Location = new Point(797, 91);
             numericL.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             numericL.Name = "numericL";
             numericL.Size = new Size(53, 23);
             numericL.TabIndex = 21;
             // 
+            // DetectBtn
+            // 
+            DetectBtn.Location = new Point(668, 234);
+            DetectBtn.Name = "DetectBtn";
+            DetectBtn.Size = new Size(204, 51);
+            DetectBtn.TabIndex = 29;
+            DetectBtn.Text = "Detect";
+            DetectBtn.UseVisualStyleBackColor = true;
+            DetectBtn.Click += DetectBtn_Click;
+            // 
+            // flowLayoutPanel1
+            // 
+            flowLayoutPanel1.Location = new Point(999, 17);
+            flowLayoutPanel1.Name = "flowLayoutPanel1";
+            flowLayoutPanel1.Size = new Size(500, 526);
+            flowLayoutPanel1.TabIndex = 30;
+            // 
+            // numericProc
+            // 
+            numericProc.Location = new Point(878, 250);
+            numericProc.Name = "numericProc";
+            numericProc.Size = new Size(74, 23);
+            numericProc.TabIndex = 31;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1003, 563);
+            ClientSize = new Size(1507, 555);
+            Controls.Add(numericProc);
+            Controls.Add(flowLayoutPanel1);
+            Controls.Add(DetectBtn);
             Controls.Add(label7);
             Controls.Add(label8);
             Controls.Add(numericSizeMax);
@@ -488,6 +519,7 @@ namespace TechVisionLab4
             ((System.ComponentModel.ISupportInitialize)numericSizeMin).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericU).EndInit();
             ((System.ComponentModel.ISupportInitialize)numericL).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericProc).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -532,5 +564,8 @@ namespace TechVisionLab4
         private NumericUpDown numericSizeMin;
         private NumericUpDown numericU;
         private NumericUpDown numericL;
+        private Button DetectBtn;
+        private FlowLayoutPanel flowLayoutPanel1;
+        private NumericUpDown numericProc;
     }
 }
