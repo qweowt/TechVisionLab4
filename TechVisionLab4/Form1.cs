@@ -16,6 +16,11 @@ namespace TechVisionLab4
 
         OpenCvSharp.Point point;
 
+        OpenCvSharp.Point[][] contours;
+        HierarchyIndex[] hierarchy;
+        OpenCvSharp.Rect rect;
+        List<OpenCvSharp.Rect> rectList;
+
         public Form1()
         {
             InitializeComponent();
@@ -116,7 +121,50 @@ namespace TechVisionLab4
                         string str = $"B: {b.ToString()} R: {r.ToString()} G: {g.ToString()}";
                         frame.PutText(str, point, new HersheyFonts(), 0.5, new Scalar(0, 0, 0));
                     }
-                    pictureBox1.Image = BitmapConverter.ToBitmap(SetFilter(frame)); // Отображение кадра на PictureBox
+                    if (ChBfilter.Checked)
+                    {
+                        for (int i = 0; i < frame.Width; i++)
+                        {
+                            for (int j = 0; j < frame.Height; j++)
+                            {
+                                Vec3b pixelValue = frame.Get<Vec3b>(j, i);
+                                byte b = pixelValue.Item0;
+                                byte r = pixelValue.Item1;
+                                byte g = pixelValue.Item2;
+
+                                if (b < numericBmin.Value || b > numericBmax.Value || 
+                                    r < numericRmin.Value || r > numericRmax.Value || 
+                                    g < numericGmin.Value || g > numericGmax.Value)
+                                    frame.Set(j, i, new Vec3b(0, 0, 0));
+                            }
+                        }
+                    }
+
+                    if (SearchObjects.Checked)
+                    {
+                        Mat findObjectMat = new Mat();
+                        Cv2.Canny(frame, findObjectMat, (int)numericL.Value, (int)numericU.Value);
+
+                        Cv2.FindContours(findObjectMat, out contours, out hierarchy, RetrievalModes.External, ContourApproximationModes.ApproxTC89KCOS);
+                        rectList = new List<OpenCvSharp.Rect>();
+                        foreach (OpenCvSharp.Point[] contour in contours)
+                        {
+                            rect = Cv2.BoundingRect(contour);
+
+                            int max = (int)numericSizeMax.Value;
+                            int min = (int)numericSizeMin.Value;
+
+                            if (rect.Width > min && rect.Height > min && rect.Width < max && rect.Height < max)
+                            {
+                                rectList.Add(rect);
+
+                                frame.PutText(rect.Height.ToString() + " " + rect.Width.ToString(), new OpenCvSharp.Point(rect.X, rect.Y - 2), HersheyFonts.HersheySimplex, 0.5, new Scalar(0, 0, 0));
+                                frame.Rectangle(rect, new Scalar(0, 0, 0));
+                            }
+                        }
+                    }
+
+                    pictureBox1.Image = BitmapConverter.ToBitmap(SetFilter(frame)); 
                 }
             }
             catch (Exception ex)
@@ -140,8 +188,8 @@ namespace TechVisionLab4
                     SetUIParam(filtersCb.SelectedIndex);
                     break;
                 case 2:
-                    Scalar lowerBound = new Scalar(trackBarLR.Value, trackBarLG.Value, trackBarLG.Value); // Нижняя граница (синий цвет)
-                    Scalar upperBound = new Scalar(trackBarUR.Value, trackBarUG.Value, trackBarUB.Value); // Верхняя граница (зеленый цвет)
+                    Scalar lowerBound = new Scalar(trackBarLR.Value, trackBarLG.Value, trackBarLG.Value); 
+                    Scalar upperBound = new Scalar(trackBarUR.Value, trackBarUG.Value, trackBarUB.Value); 
                     Cv2.InRange(frame, lowerBound, upperBound, newFrame);
                     SetUIParam(filtersCb.SelectedIndex);
                     break;
@@ -150,12 +198,12 @@ namespace TechVisionLab4
                     Cv2.Canny(frame, newFrame, trackBarLR.Value, trackBarUR.Value);
                     break;
                 case 4:
-                    Mat filtered2D = new Mat(3, 3, MatType.CV_32F, new float[] { -1, -1, -1, -1, 8, -1, -1, -1, -1 }); // Создание матрицы ядра фильтра
+                    Mat filtered2D = new Mat(3, 3, MatType.CV_32F, new float[] { -1, -1, -1, -1, 8, -1, -1, -1, -1 }); 
                     SetUIParam(filtersCb.SelectedIndex);
                     Cv2.Filter2D(frame, newFrame, -1, filtered2D);
                     break;
                 case 5:
-                    OpenCvSharp.Size kernelSize = new OpenCvSharp.Size(trackBarBlur.Value, trackBarBlur.Value); // Размер ядра сглаживания
+                    OpenCvSharp.Size kernelSize = new OpenCvSharp.Size(trackBarBlur.Value, trackBarBlur.Value); 
                     SetUIParam(filtersCb.SelectedIndex);
                     Cv2.Blur(frame, newFrame, kernelSize);
                     break;
@@ -237,12 +285,6 @@ namespace TechVisionLab4
             }
         }
 
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void filtersCb_SelectedIndexChanged(object sender, EventArgs e)
         {
             SetUIParam(filtersCb.SelectedIndex);
@@ -251,9 +293,7 @@ namespace TechVisionLab4
         private void ParamCheck(object sender, MouseEventArgs e)
         {
             if (PixelParm.Checked)
-            {
                 point = new OpenCvSharp.Point(e.X, e.Y);
-            }
             else
                 return;
         }
